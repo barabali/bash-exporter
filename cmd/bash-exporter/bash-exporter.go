@@ -26,13 +26,14 @@ func main() {
 	path := flag.String("path", "/scripts", "path to directory with bash scripts")
 	labels := flag.String("labels", "hostname,env", "additioanal labels")
 	prefix := flag.String("prefix", "bash", "Prefix for metrics")
+	resultkey := flag.String("resultkey", "verb", "Key value for results")
 	debug := flag.Bool("debug", false, "Debug log level")
 	flag.Parse()
 
 	var labelsArr []string
 
 	labelsArr = strings.Split(*labels, ",")
-	labelsArr = append(labelsArr, "verb",  "job")
+	labelsArr = append(labelsArr, resultkey,  "job")
 
 	verbMetrics = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
