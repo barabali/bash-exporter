@@ -33,7 +33,8 @@ func main() {
 	var labelsArr []string
 
 	labelsArr = strings.Split(*labels, ",")
-	labelsArr = append(labelsArr, *resultkey,  "job")
+	labelsArr = append(labelsArr,  "job")
+	labelsArr = append(*resultkey)
 
 	verbMetrics = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
