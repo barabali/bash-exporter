@@ -26,7 +26,7 @@ func main() {
 	path := flag.String("path", "/scripts", "path to directory with bash scripts")
 	labels := flag.String("labels", "hostname,env", "additioanal labels")
 	prefix := flag.String("prefix", "bash", "Prefix for metrics")
-	resultskey := flag.String("resultskey", "verb", "Key value for results")
+	resultkey := flag.String("resultkey", "verb", "Key value for results")
 	debug := flag.Bool("debug", false, "Debug log level")
 	flag.Parse()
 
@@ -34,7 +34,7 @@ func main() {
 
 	labelsArr = strings.Split(*labels, ",")
 	labelsArr = append(labelsArr,  "job")
-	labelsArr = append(*resultskey)
+	labelsArr = append(labelsArr,*resultkey)
 
 	verbMetrics = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -59,11 +59,11 @@ func main() {
 	}
 
 	http.Handle("/metrics", promhttp.Handler())
-	go Run(int(*interval), *path, names, labelsArr, *debug)
+	go Run(int(*interval), *path, names, labelsArr, *debug,*resultkey)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
-func Run(interval int, path string, names []string, labelsArr []string, debug bool) {
+func Run(interval int, path string, names []string, labelsArr []string, debug bool, resultkey string) {
 	for {
 		var wg sync.WaitGroup
 		oArr := []*run.Output{}
@@ -93,7 +93,7 @@ func Run(interval int, path string, names []string, labelsArr []string, debug bo
 					   o.Schema.Labels[label] = ""
 					}
 				}
-				o.Schema.Labels[*resultskey] = metric
+				o.Schema.Labels[resultkey] = metric
 				o.Schema.Labels["job"] = o.Job
 				fmt.Println(o.Schema.Labels)
 				verbMetrics.With(prometheus.Labels(o.Schema.Labels)).Set(float64(value))
